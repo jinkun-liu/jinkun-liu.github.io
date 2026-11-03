@@ -237,6 +237,15 @@
       : `<div class="section__head">${inner}</div>`;
   };
 
+  const stepsHTML = (list) =>
+    `<ol class="steps">${list.map(([t, d], i) => `<li class="step reveal" style="--d:${i * 80}ms"><span class="step__n">0${i + 1}</span><h3 class="step__t">${esc(t)}</h3><p class="muted">${esc(d)}</p></li>`).join('')}</ol>`;
+
+  // Slides of a rendered PDF, titled for the lightbox; `name` is the bare slide title for the deck viewer
+  const slideItems = (doc, titles = []) => {
+    const pages = docPages(doc);
+    return pages.map((p, i) => ({ ...p, name: titles[i] || `Slide ${p.n}`, title: `${titles[i] || 'Slide'} — slide ${p.n} of ${pages.length}`, file: fileName(doc) }));
+  };
+
   const railCtrl = () => `<div class="rail-ctrl"><button class="rail-btn" data-rail="-1" aria-label="Scroll left">${ICON.left}</button><button class="rail-btn" data-rail="1" aria-label="Scroll right">${ICON.right}</button></div>`;
 
   const crumbs = (n) => {
@@ -464,7 +473,7 @@
 
       <section class="section"><div class="wrap">
         ${head('Method', 'How the search worked, in four steps.')}
-        <ol class="steps">${b.steps.map(([t, d], i) => `<li class="step reveal" style="--d:${i * 80}ms"><span class="step__n">0${i + 1}</span><h3 class="step__t">${esc(t)}</h3><p class="muted">${esc(d)}</p></li>`).join('')}</ol>
+        ${stepsHTML(b.steps)}
         <div class="formulas mt-l">${b.formulas.map(([f, d], i) => `<div class="formula reveal" style="--d:${i * 80}ms"><span class="formula__f">${esc(f)}</span><span class="small muted">${esc(d)}</span></div>`).join('')}</div>
       </div></section>
 
@@ -491,6 +500,95 @@
           <div class="links-row"><button class="btn btn--sm" data-copy="current">Copy</button>${ext(b.url, 'View on IOPscience', 'more more--ext')}</div>
         </div>
         <p class="small muted mt-m">Open access under the Creative Commons Attribution 3.0 licence. Published under licence by IOP Publishing Ltd.</p>
+        <p class="mono muted mt-s">${esc(b.file)}</p>
+      </div></section>`;
+    },
+
+    placegame(b, n) {
+      const deck = (n.blocks || []).find((x) => x.kind === 'deck') || {};
+      const items = slideItems(b.deck, deck.slides);
+      const g = group(items);
+      const slide = (k) => items[k - 1];
+      const members = b.members.map((m, i) => (i === b.me ? `<b>${esc(m)}</b>` : esc(m))).join('<span class="sep">, </span>');
+      const toDeck = (k, label) => `<button class="more" data-deck-jump="${k - 1}">${esc(label)}</button>`;
+      const yt = `https://www.youtube-nocookie.com/embed/${b.yt}?autoplay=1&rel=0&playsinline=1`;
+      return `
+      <section class="section section--tight" style="padding-top:0"><div class="wrap">
+        <div class="paper-bar reveal">
+          <p class="paper-bar__authors"><span class="eyebrow paper-bar__team">${esc(b.team)}</span>${members}</p>
+          <div class="links-row"><button class="btn" data-scrollto="pbg-video">${ICON.play} Watch the video</button><button class="btn btn--ghost" data-scrollto="${esc(deck.id || '')}">View the slides</button></div>
+        </div>
+        <dl class="facts reveal mt-l">${b.facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+      </div></section>
+
+      <section class="section section--tight" id="pbg-video" style="padding-top:0"><div class="wrap--wide">
+        <div class="film film--yt reveal reveal--scale" data-yt="${esc(yt)}" data-title="${esc(n.project)}">
+          <div class="film__poster" role="button" tabindex="0" aria-label="Play the ${esc(n.project)} video from YouTube">
+            ${img(slide(1).src, n.project)}
+            <div class="film__overlay"><span class="playpill">${ICON.play} Play the team video <small>YouTube</small></span></div>
+          </div>
+        </div></div>
+        <div class="wrap links-row mt-m" style="justify-content:space-between"><span class="mono muted">${esc(b.file)} · plays from YouTube when you press play</span><a class="more more--ext" href="${esc(b.url)}" target="_blank" rel="noopener">Watch on YouTube</a></div>
+      </section>
+
+      <section class="section section--alt"><div class="wrap">
+        ${head('How a visit works', 'One hour, four mini-games, one museum. Game rooms are spread through the building and teams choose their own order, so several groups can play at once without crowding a gallery.')}
+        ${stepsHTML(b.flow)}
+        <div class="links-row mt-m reveal">${toDeck(3, 'Game setup slides')}${toDeck(11, 'See the museum map')}</div>
+      </div></section>
+
+      <section class="section"><div class="wrap">
+        ${head('Four mini-games', 'Each station is built around the art in its room. Open a slide to read the full rules.')}
+        <div class="mgames">${b.games.map((m, i) => `<article class="mgame reveal" style="--d:${(i % 2) * 90}ms">
+          <button class="mgame__media" data-lb="${g}" data-i="${m.slide - 1}" aria-label="Open slide ${m.slide}: ${esc(m.name)}">${img(slide(m.slide).thumb, m.name)}</button>
+          <div class="mgame__body">
+            <span class="eyebrow">Task ${i + 1}${m.alias ? ` · ${esc(m.alias)}` : ''}</span>
+            <h3 class="mgame__title">${esc(m.name)}</h3>
+            <p class="muted">${esc(m.text)}</p>
+            <dl class="mgame__stats">${m.stats.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+            <ol class="mgame__loop" aria-label="${esc(m.name)} goals">${m.loop.map((s, j) => `<li><span>${['Short', 'Middle', 'Long'][j]} goal</span>${esc(s)}</li>`).join('')}</ol>
+            ${toDeck(m.slide, `Slide ${m.slide} in the deck`)}
+          </div></article>`).join('')}</div>
+      </div></section>
+
+      <section class="section section--alt"><div class="wrap">
+        <div class="split">
+          ${head('Who it’s for', b.playersNote)}
+          <div class="personas">${b.players.map(([t, d], i) => `<div class="persona reveal" style="--d:${i * 90}ms"><h3 class="persona__t">${esc(t)}</h3><p class="muted">${esc(d)}</p></div>`).join('')}</div>
+        </div>
+        <h3 class="h3 mt-l reveal">The loop</h3>
+        <ol class="ladder mt-m">${b.goals.map(([k, v], i) => `<li class="reveal" style="--d:${i * 90}ms"><span class="eyebrow">${esc(k)}</span><span class="ladder__t">${esc(v)}</span></li>`).join('')}</ol>
+        <p class="lede mt-m reveal">${esc(b.goalsNote)}</p>
+      </div></section>
+
+      <section class="section"><div class="wrap">
+        ${head('Beyond the four games', 'Two lighter tasks that can be done anywhere in the museum.')}
+        <div class="findings">${b.extras.map((x, i) => `<article class="finding extra reveal" style="--d:${i * 100}ms"><span class="eyebrow">${esc(x.kind)}</span><h3 class="extra__t">${esc(x.name)}</h3><p class="muted">${esc(x.text)}</p>${toDeck(x.slide, `Slide ${x.slide} in the deck`)}</article>`).join('')}</div>
+        <div class="ruled mt-l"><div class="ruled__row reveal"><h4>What makes it different</h4><div class="pills">${b.different.map((s) => `<span class="pill">${esc(s)}</span>`).join('')}</div></div></div>
+        <p class="lede mt-l reveal">${esc(b.inspiration)}</p>
+      </div></section>`;
+    },
+
+    deck(b) {
+      const items = slideItems(b.doc, b.slides);
+      if (!items.length) return '';
+      const g = group(items);
+      const first = items[0];
+      return `<section class="section section--alt"${b.id ? ` id="${esc(b.id)}"` : ''}><div class="wrap">${head(b.title, b.desc)}
+        <div class="deck reveal" data-deck data-g="${g}" tabindex="0" aria-roledescription="carousel" aria-label="${esc(b.title)} — use the arrow keys to change slides">
+          <div class="deck__stage" style="aspect-ratio:${first.w} / ${first.h}">
+            <img class="deck__img" src="${esc(first.src)}" alt="${esc(first.name)}" data-lb="${g}" data-i="0" draggable="false">
+            <button class="deck__nav deck__nav--prev" data-deck-go="-1" aria-label="Previous slide">${ICON.left}</button>
+            <button class="deck__nav deck__nav--next" data-deck-go="1" aria-label="Next slide">${ICON.right}</button>
+            <span class="deck__progress"><i></i></span>
+          </div>
+          <div class="deck__bar">
+            <p class="deck__cap" aria-live="polite"><span class="deck__n"></span><span class="deck__title"></span></p>
+            <button class="more" data-deck-full>Full screen</button>
+          </div>
+          ${b.chapters ? `<div class="chips deck__chapters" role="toolbar" aria-label="Chapters">${b.chapters.map(([label, i]) => `<button class="chip" data-deck-to="${i}">${esc(label)}</button>`).join('')}</div>` : ''}
+          <div class="rail deck__strip">${items.map((p, i) => `<button class="deck__thumb" data-deck-to="${i}" aria-label="Slide ${p.n}: ${esc(p.name)}">${img(p.thumb, '')}<span>${p.n}</span></button>`).join('')}</div>
+        </div>
         <p class="mono muted mt-s">${esc(b.file)}</p>
       </div></section>`;
     },
@@ -600,6 +698,7 @@
       { full: true, title: 'Art & Design Portfolio', sub: 'Design. Painting & Drawing. Photography.', links: ['Explore the folder'], href: r('art-design'), img: fullFor('Art_Design_Potfolio/Design/Graphic_Design/Book_Design/IMG_4961') },
       { dark: true, title: 'Game Portfolio', sub: 'Six games in Unity, Unreal Engine and HTML5.', links: ['Watch gameplay'], href: r('games/production'), img: `${A}Game_Portfolio/My_Game_Production/ChanllengeGame_UE.poster.jpg` },
       { title: 'MoonWave', sub: 'Where soul meets rhythm — a festival identity.', links: ['See the system'], href: r('art-design/design/graphic-design/music-festival-design'), img: thumbFor('Art_Design_Potfolio/Design/Graphic_Design/Music_Festival_Design/3-posters/p02'), mod: 'book' },
+      { full: true, dark: true, title: 'Beyond the Frame', sub: 'A place-based game for the SCAD Museum of Art. Four mini-games, one museum.', links: ['Explore the game'], href: r('games/production/place-based-game'), img: fullFor('Game_Portfolio/My_Game_Production/Place_Based_Game/GAME-714-01_27Q1_TeamHunters_Playspace/p01') },
       { dark: true, title: 'Velvet Dream', sub: 'A short film.', links: ['Watch the film'], href: r('art-design/design/velvet-dream'), img: `${A}Art_Design_Potfolio/Design/Film_Velvet-Dream.poster.jpg` },
       { title: 'Settle', sub: 'Finding a home, designed more humanely.', links: ['View the case study'], href: r('art-design/design/ui-ux/app-uiux'), img: thumbFor('Art_Design_Potfolio/Design/UI_UX/App_UIUX/P2-Deliverable-6/p02') },
       { dark: true, title: 'Photobook 2', sub: 'Night photography, in two parts.', links: ['Turn the pages'], href: r('art-design/photography/photobook-2'), img: thumbFor('Art_Design_Potfolio/Photography/Photobook_2/IMG_4938') },
@@ -617,6 +716,7 @@
       ['Photography', 'Pinhole', 'art-design/photography', 'Art_Design_Potfolio/Photography/Pinhole-6'],
       ['Photobook 1', 'On the Way', 'art-design/photography/photobook-1', 'Art_Design_Potfolio/Photography/Photobook_1/Photobook2_v2/p07'],
       ['Game Production', '3D Ghost Game', 'games/production', 'Game_Portfolio/My_Game_Production/3D_Ghost_Game_Unity'],
+      ['Place-Based Game', 'Beyond the Frame', 'games/production/place-based-game', 'Game_Portfolio/My_Game_Production/Place_Based_Game/GAME-714-01_27Q1_TeamHunters_Playspace/p15'],
       ['Graphic Design', 'Times New Roman', 'art-design/design/graphic-design/other', 'Art_Design_Potfolio/Design/Graphic_Design/Other/PROJ_2_JinKun_to-print/p01'],
       ['Painting & Drawing', 'Leather Jacket', 'art-design/painting-drawing', 'Art_Design_Potfolio/Painting_Drawing/Screenshot-2026-11-02-095525'],
       ['Photography', 'Cyanotype', 'art-design/photography', 'Art_Design_Potfolio/Photography/cyanotype-2'],
@@ -1533,6 +1633,7 @@
     $$('[data-zoom]', root).forEach(initZoom);
     $$('[data-scrub]', root).forEach(initScrub);
     $$('[data-transit]', root).forEach(initTransit);
+    $$('[data-deck]', root).forEach(initDeck);
     initLibrary(root, query);
     initFinder(root, query);
   }
@@ -1567,6 +1668,37 @@
         card.querySelector('.links-row').insertAdjacentHTML('afterend', `<iframe class="itchframe" src="https://itch.io/embed/${esc(itch.dataset.itch)}?dark=true" title="Where You Live on itch.io"></iframe>`);
         itch.remove();
       }
+      return;
+    }
+    const yt = e.target.closest('[data-yt]');
+    if (yt) {
+      // the YouTube player is loaded only when asked for
+      if (!$('iframe', yt)) {
+        yt.insertAdjacentHTML('beforeend', `<iframe src="${esc(yt.dataset.yt)}" title="${esc(yt.dataset.title)} — YouTube video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`);
+        yt.classList.add('is-playing');
+      }
+      return;
+    }
+    const dj = e.target.closest('[data-deck-jump]');
+    if (dj) {
+      const deck = $('[data-deck]');
+      if (deck && deck.show) {
+        deck.show(+dj.dataset.deckJump);
+        deck.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+        deck.focus({ preventScroll: true });
+      }
+      return;
+    }
+    const to = e.target.closest('[data-scrollto]');
+    if (to) {
+      const target = to.dataset.scrollto && document.getElementById(to.dataset.scrollto);
+      if (target) target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      return;
+    }
+    if (e.target.closest('[data-skip]')) {
+      // a plain #app link would be read as a route by the hash router
+      e.preventDefault();
+      app.focus();
       return;
     }
     const lm = e.target.closest('[data-load-model]');
@@ -2101,6 +2233,94 @@
     CLEANUP.push(() => mq.removeEventListener('change', onMq));
   }
 
+  /* ---------- slide deck viewer */
+  function initDeck(el) {
+    const items = GROUPS[el.dataset.g] || [];
+    const n = items.length;
+    if (!n) return;
+    const stage = $('.deck__stage', el);
+    const im = $('.deck__img', el);
+    const strip = $('.deck__strip', el);
+    const thumbs = $$('.deck__thumb', el);
+    const chips = $$('.deck__chapters .chip', el);
+    const starts = chips.map((c) => +c.dataset.deckTo);
+    let s = 0;
+    let token = 0;
+
+    const ui = () => {
+      const it = items[s];
+      $('.deck__n', el).textContent = `${s + 1} / ${n}`;
+      $('.deck__title', el).textContent = it.name;
+      im.alt = it.name;
+      im.dataset.i = String(s);
+      $('.deck__progress i', el).style.transform = `scaleX(${(s + 1) / n})`;
+      $('[data-deck-go="-1"]', el).disabled = s === 0;
+      $('[data-deck-go="1"]', el).disabled = s === n - 1;
+      thumbs.forEach((b, j) => {
+        b.classList.toggle('is-on', j === s);
+        if (j === s) b.setAttribute('aria-current', 'true');
+        else b.removeAttribute('aria-current');
+      });
+      const chapter = starts.reduce((c, start, j) => (s >= start ? j : c), -1);
+      chips.forEach((b, j) => b.classList.toggle('is-on', j === chapter));
+      const th = thumbs[s];
+      if (th) strip.scrollTo({ left: th.offsetLeft - (strip.clientWidth - th.offsetWidth) / 2, behavior: reduceMotion ? 'auto' : 'smooth' });
+    };
+    const show = (i, dir = Math.sign(i - s)) => {
+      i = clamp(i, 0, n - 1);
+      if (i === s) return;
+      s = i;
+      ui();
+      // swap the image once the next slide has loaded, so the stage never flashes empty
+      const t = ++token;
+      const next = new Image();
+      const swap = () => {
+        if (t !== token) return;
+        im.src = items[i].src;
+        if (dir && !reduceMotion) im.animate([{ opacity: 0.35, transform: `translateX(${dir * 22}px)` }, { opacity: 1, transform: 'none' }], { duration: 460, easing: 'cubic-bezier(.16,1,.3,1)' });
+      };
+      next.onload = next.onerror = swap;
+      next.src = items[i].src;
+      [i + 1, i - 1].forEach((j) => items[j] && (new Image().src = items[j].src));
+    };
+    el.show = show;
+
+    el.addEventListener('click', (e) => {
+      const go = e.target.closest('[data-deck-go]');
+      if (go) return show(s + +go.dataset.deckGo);
+      const to = e.target.closest('[data-deck-to]');
+      if (to) return show(+to.dataset.deckTo);
+      if (e.target.closest('[data-deck-full]')) openLightbox(items, s, im);
+    });
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); show(s + 1); }
+      else if (e.key === 'ArrowLeft') { e.preventDefault(); show(s - 1); }
+      else if (e.key === 'Home' && e.target === el) { e.preventDefault(); show(0); }
+      else if (e.key === 'End' && e.target === el) { e.preventDefault(); show(n - 1); }
+    });
+    // swipe the stage on touch screens; a swipe must not also open the lightbox
+    let sx = null;
+    let swiped = false;
+    stage.addEventListener('pointerdown', (e) => (sx = e.clientX));
+    stage.addEventListener('pointerup', (e) => {
+      if (sx == null) return;
+      const dx = e.clientX - sx;
+      sx = null;
+      if (Math.abs(dx) > 40) {
+        swiped = true;
+        show(s + (dx < 0 ? 1 : -1));
+      }
+    });
+    stage.addEventListener('click', (e) => {
+      if (!swiped) return;
+      swiped = false;
+      e.preventDefault();
+      e.stopPropagation();
+    }, true);
+    ui();
+    new Image().src = items[1 % n].src;
+  }
+
   /* ---------- home: interactive dot field */
   function initHero(hero) {
     requestAnimationFrame(() => $$('.rise, .reveal', hero).forEach((el) => el.classList.add('in')));
@@ -2243,7 +2463,7 @@
       app.innerHTML = page.html;
       lnavSlot.innerHTML = page.lnav;
       document.body.dataset.theme = page.theme;
-      document.title = page.title;
+      document.title = page.title.includes(SITE.person.name) ? page.title : `${page.title} · ${SITE.person.name}`;
       $('meta[name="theme-color"]').content = page.theme === 'dark' ? '#000000' : '#ffffff';
       window.scrollTo(0, 0);
       markActive(r);

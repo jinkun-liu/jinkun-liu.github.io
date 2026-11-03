@@ -9,6 +9,7 @@
   const GD = 'Art_Design_Potfolio/Design/Graphic_Design/';
   const UX = 'Art_Design_Potfolio/Design/UI_UX/';
   const GAME = 'Game_Portfolio/';
+  const PBG = GAME + 'My_Game_Production/Place_Based_Game/GAME-714-01_27Q1_TeamHunters_Playspace/';
 
   const range = (prefix, from, to) => {
     const out = [];
@@ -301,8 +302,8 @@
         folder: 'Game_Portfolio',
         title: 'Game Portfolio',
         short: 'Games',
-        tagline: 'Games built in Unity, Unreal Engine, and for the web.',
-        intro: 'Playable prototypes and finished games across Unity and Unreal Engine, plus 3D assets modeled for SCAD’s Game Art Methods.',
+        tagline: 'Games built in Unity, Unreal Engine, for the web — and for a museum.',
+        intro: 'Playable prototypes and finished games across Unity and Unreal Engine, a place-based game designed for the SCAD Museum of Art, and 3D assets modeled for SCAD’s Game Art Methods.',
         cover: GAME + 'My_Game_Production/ChanllengeGame_UE',
         coverIsVideo: true,
         theme: 'dark',
@@ -312,8 +313,8 @@
             folder: 'Game_Portfolio/My_Game_Production',
             title: 'My Game Production',
             short: 'Production',
-            tagline: 'Six games — Unity, Unreal Engine, and HTML5.',
-            intro: 'Gameplay captures from each build. Hover a card to preview it; click to watch with sound. Filter by engine.',
+            tagline: 'Six digital games and a place-based museum game.',
+            intro: 'Gameplay captures from each build — hover a card to preview it, click to watch with sound, or filter by engine. The Place_Based_Game folder holds Beyond the Frame, a team-designed game played inside the SCAD Museum of Art.',
             cover: GAME + 'My_Game_Production/ChanllengeGame_UE',
             coverIsVideo: true,
             theme: 'dark',
@@ -326,6 +327,86 @@
                 { video: GAME + 'My_Game_Production/2D_RPG_Game_Unity', title: '2D RPG Game', engine: 'Unity', desc: 'A top-down 2D role-playing game with a tile-based world.', file: '2D_RPG_Game_Unity.mp4' },
                 { itch: 'https://jinkun-liu.itch.io/where-you-live', itchId: '5240214', title: 'Where You Live', engine: 'Web', desc: 'A 3D adventure, published on itch.io and playable in the browser.', file: 'Where You Live by JinKun Liu.url' },
               ] },
+            ],
+            children: [
+              {
+                slug: 'place-based-game',
+                folder: 'Game_Portfolio/My_Game_Production/Place_Based_Game',
+                title: 'Place Based Game',
+                project: 'Beyond the Frame',
+                tagline: 'A place-based game for the SCAD Museum of Art.',
+                intro:
+                  'A team-designed play space that turns a visit to the SCAD Museum of Art into a friendly competition. Teams move from gallery to gallery through four mini-games built around the art on the walls — collecting points, stamps and stickers, and learning about the artworks as they play.',
+                cover: PBG + 'p01',
+                theme: 'dark',
+                blocks: [
+                  {
+                    kind: 'placegame',
+                    yt: 'nZfB_98AnEI',
+                    url: 'https://www.youtube.com/watch?v=nZfB_98AnEI',
+                    file: 'Place_Based_Game_Team_Project - YouTube.url',
+                    deck: PBG.replace(/\/$/, ''),
+                    team: 'Team Hunters',
+                    members: ['Yue Zhang', 'Eli Aashi', 'Hanna Jusza', 'Hongyi Liu', 'JinKun Liu', 'Rouyuan Ying', 'Yibo Pan', 'Zhitong Ye'],
+                    me: 4,
+                    facts: [
+                      ['Course', 'GAME 714 · SCAD'],
+                      ['Team', 'Team Hunters · 8 members'],
+                      ['Location', 'SCAD Museum of Art, Savannah'],
+                      ['Session', 'Thursday evening, 7–8 pm — longer hours, fewer visitors'],
+                      ['Players', 'Solo or teams of 3–5'],
+                      ['Materials', 'Pamphlet and map · Stamps · Stickers'],
+                    ],
+                    flow: [
+                      ['Check in', 'A Game Master in the lobby introduces the rules.'],
+                      ['Receive materials', 'Each team gets a pamphlet, a map of the game rooms and its list of tasks.'],
+                      ['Visit the stations', 'Teams pick their own route. A Game Master in each room runs the timer, checks answers and awards stamps.'],
+                      ['Return for rewards', 'Back in the lobby, points are totaled and the final stickers handed out.'],
+                    ],
+                    games: [
+                      { name: 'Minesweeper', alias: 'Art Sweeper', slide: 13, stats: [['Field', '10 × 10 grid'], ['Score', 'Time and tries']],
+                        text: 'A life-size minesweeper laid out on the gallery floor. Players roll a die to see how many steps they can take, and each number shows how many mines touch that square. The mines are artworks that share a feature — denim fabric, for example. Step on one and the team starts over.',
+                        loop: ['Find the clues and numbers', 'Work out where the mines are', 'Mark every mine and reveal the answer'] },
+                      { name: 'T-shirt Hunt', slide: 15, stats: [['Time', '5 minutes'], ['Score', '5 points']],
+                        text: 'Clue cards show cropped details of shirts hanging on a wall of hundreds. Match each card to the right T-shirt, with two tries per card. Solving all three unlocks a bonus clue worth two points — with only one try.',
+                        loop: ['Find one target T-shirt', 'Find all three', 'Unlock the bonus shirt and finish faster'] },
+                      { name: 'I Spy', slide: 19, stats: [['Time', '15 minutes'], ['Score', '1–10 points a clue']],
+                        text: 'Riddle-like hint cards describe three sculptures in a room of near-identical models. Players compare shape, texture and color to find each one. Three wrong answers ends the game, and a hint appears after five minutes without progress.',
+                        loop: ['Match one clue to one artwork', 'Find all three target artworks', 'Complete the three-artwork collection'] },
+                      { name: 'Jigsaw', slide: 22, stats: [['Pieces', 'Hidden in the room'], ['Score', 'Search and solve time']],
+                        text: 'Puzzle pieces are hidden throughout a gallery. The team searches the room, assembles the pieces together, and the finished puzzle reveals an artwork from the museum.',
+                        loop: ['Find the puzzle pieces', 'Assemble the puzzle', 'Reveal the hidden artwork'] },
+                    ],
+                    players: [
+                      ['Achievers', 'Players who enjoy completing tasks and reaching goals — finding and finishing different challenges throughout the museum.'],
+                      ['Masterminds', 'Players who like to be challenged and don’t like to be rushed. Some tasks are deliberately harder, just for them.'],
+                    ],
+                    playersNote: 'On a research visit, the team saw that most visitors are adults who are already interested in art, usually in groups of three to five — so the game builds on a museum trip they already enjoy.',
+                    goals: [
+                      ['Short goal', 'Complete each task and earn points'],
+                      ['Middle goal', 'Complete the whole collection'],
+                      ['Long goal', 'Finish the museum route and claim the final reward'],
+                    ],
+                    goalsNote: 'As you play, more knowledge is gained — and a stronger sense of competition sends teams back for a higher ranking.',
+                    extras: [
+                      { name: 'Ask a Curator', kind: 'Warm-up · Bonus task', slide: 12, text: 'Ask a curator about one artwork in at least three rooms, then write down the most interesting fact you learned. An easy start that helps shyer players talk to the people who know the art best.' },
+                      { name: 'Photo Task', kind: 'Alternative task', slide: 25, text: 'Photograph the most thought-provoking artworks in at least three rooms, and note the most interesting thing you learned about each.' },
+                    ],
+                    different: ['Made for teens and adults', 'Challenges for Achievers and Masterminds', 'Curator warm-up task', 'Low-tech, low-cost, staff-run'],
+                    inspiration: 'Most museum play spaces are made for young children. Inspired by examples such as “Three Birds” at the Story Gardens of Milton Library and the Savannah Children’s Museum, Beyond the Frame is designed to entertain and challenge older visitors instead.',
+                  },
+                  {
+                    kind: 'deck',
+                    id: 'pbg-deck',
+                    doc: PBG.replace(/\/$/, ''),
+                    title: 'The pitch deck',
+                    desc: 'All 27 slides from the team’s presentation. Use the arrows, swipe, or pick a chapter.',
+                    file: 'GAME-714-01_27Q1_TeamHunters_Playspace.pdf',
+                    slides: ['Beyond the Frame', 'Idea behind the game', 'Game setup', 'Game Masters', 'General rules', 'Player archetypes', 'Achievers and Masterminds', 'Game outcome and prizes', 'Core gameplay loop', 'Goals', 'Game area', 'Warm-up and bonus task', 'Task 1: Minesweeper', 'Task 1 loop and goals', 'Task 2: T-shirt Hunt', 'T-shirt Hunt rules', 'Task 2 loop and goals', 'Task 3: I Spy — game area', 'Task 3: I Spy', 'I Spy rules', 'Task 3 loop and goals', 'Task 4: Jigsaw', 'Task 4 loop and goals', 'Points systems', 'Alternative task', 'Innovation', 'Thank you'],
+                    chapters: [['Concept', 0], ['Setup & rules', 2], ['Players', 5], ['Loop & goals', 8], ['Map', 10], ['Mini-games', 12], ['Scoring', 23], ['Extras', 24]],
+                  },
+                ],
+              },
             ],
           },
           {
