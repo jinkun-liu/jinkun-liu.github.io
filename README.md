@@ -1,2 +1,2 @@
-jinkun-liu.github.io
+*JinKunLiu.github.io
 JinKun Liu's Website
