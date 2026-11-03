@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>JinKun Liu — Game Developer, Designer, Artist</title>
+  <meta name="description" content="Portfolio of JinKun Liu: game production, 3D assets, graphic design, UI/UX, installation, film, painting, drawing and photography. UC Davis B.A. Art Studio & Design; SCAD MFA Game Development.">
+  <meta name="theme-color" content="#000000">
+  <meta name="author" content="JinKun Liu">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="JinKun Liu — Game Developer, Designer, Artist">
+  <meta property="og:description" content="Games in Unity and Unreal Engine, graphic design, UI/UX, film, painting, photography, and published physics research.">
+  <meta name="twitter:card" content="summary">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23000'/%3E%3Ctext x='32' y='41' font-family='Helvetica,Arial,sans-serif' font-size='26' font-weight='800' fill='%23fff' text-anchor='middle'%3EJL%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-theme="light">
+  <a class="sr-only" href="#app">Skip to content</a>
+
+  <header class="gnav" id="gnav">
+    <nav class="gnav__inner" aria-label="Global">
+      <a class="gnav__logo" href="#/" aria-label="JinKun Liu — home"><span class="gnav__mark">JL</span><span>JinKun Liu</span></a>
+      <ul class="gnav__list" id="gnav-list"></ul>
+      <div class="gnav__tools">
+        <button class="icon-btn" id="open-search" aria-label="Search the site (Ctrl+K)">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8.5" cy="8.5" r="6"/><path d="m13 13 5 5" stroke-linecap="round"/></svg>
+        </button>
+        <button class="icon-btn gnav__burger" id="open-menu" aria-label="Menu" aria-expanded="false"><i></i><i></i></button>
+      </div>
+    </nav>
+    <div class="flyout" id="flyout" aria-hidden="true"><div class="flyout__inner" id="flyout-inner"></div></div>
+  </header>
+  <div class="scrim" id="scrim"></div>
+  <nav class="mmenu" id="mmenu" aria-label="Mobile"></nav>
+
+  <div id="lnav-slot"></div>
+  <main id="app" tabindex="-1"></main>
+  <footer class="footer" id="footer"></footer>
+
+  <!-- Lightbox -->
+  <div class="overlay lb" id="lb" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <div class="lb__top">
+      <span class="lb__count" id="lb-count"></span>
+      <div class="lb__tools">
+        <button class="icon-btn" id="lb-zoom" aria-label="Zoom"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8.5" cy="8.5" r="6"/><path d="m13 13 5 5M8.5 6v5M6 8.5h5" stroke-linecap="round"/></svg></button>
+        <button class="icon-btn" id="lb-close" aria-label="Close"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m5 5 10 10M15 5 5 15" stroke-linecap="round"/></svg></button>
+      </div>
+    </div>
+    <div class="lb__stage" id="lb-stage">
+      <img class="lb__img" id="lb-img" alt="">
+      <div class="lb__spinner"></div>
+      <button class="lb__nav lb__nav--prev" id="lb-prev" aria-label="Previous"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m12.5 4-6 6 6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="lb__nav lb__nav--next" id="lb-next" aria-label="Next"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m7.5 4 6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+    <div class="lb__foot">
+      <div class="lb__cap"><span class="lb__title" id="lb-title"></span><span class="lb__file" id="lb-file"></span></div>
+      <div class="lb__strip" id="lb-strip"></div>
+    </div>
+  </div>
+
+  <!-- Video -->
+  <div class="overlay vm" id="vm" role="dialog" aria-modal="true" aria-label="Video player">
+    <button class="icon-btn vm__close" id="vm-close" aria-label="Close"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m5 5 10 10M15 5 5 15" stroke-linecap="round"/></svg></button>
+    <div class="vm__box">
+      <video id="vm-video" controls playsinline preload="metadata"></video>
+      <div class="vm__cap"><b id="vm-title"></b><span id="vm-file"></span></div>
+    </div>
+  </div>
+
+  <!-- Command palette -->
+  <div class="overlay pal" id="pal" role="dialog" aria-modal="true" aria-label="Search">
+    <div class="pal__box">
+      <label class="pal__input">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8.5" cy="8.5" r="6"/><path d="m13 13 5 5" stroke-linecap="round"/></svg>
+        <input id="pal-input" type="search" placeholder="Search pages, projects, files and games" autocomplete="off" spellcheck="false" aria-label="Search">
+        <kbd>esc</kbd>
+      </label>
+      <div class="pal__list" id="pal-list" role="listbox"></div>
+      <div class="pal__foot"><span>↑ ↓ to move</span><span>↵ to open</span><span>Ctrl / ⌘ K anywhere</span></div>
+    </div>
+  </div>
+
+  <div class="tip" id="tip" role="tooltip"></div>
+
+  <script src="js/manifest.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
